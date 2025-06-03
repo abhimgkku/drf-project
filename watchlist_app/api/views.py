@@ -87,6 +87,34 @@ class StreamPlatformDetailAV(APIView):
         platform.delete()
         return Response(status=204)
     
+class StreamPlatformDetailAv(APIView):
+    def get_object(self, pk):
+        try:
+            return StreamPlatform.objects.get(pk=pk)
+        except StreamPlatform.DoesNotExist:
+            return None
+        
+    def get(self, request, pk):
+        try:
+            platform = StreamPlatform.objects.get(pk=pk)
+        except StreamPlatform.DoesNotExist:
+            return Response({'Error':'Platform not found'},status=404)
+        serializer = StreamPlatformSerializer(platform)
+        return Response(serializer.data)
+    
+    def put(self, request, pk, format=None):
+        platform = self.get_object(pk)
+        serializer = StreamPlatformSerializer(platform, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+    
+    def delete(self, request, pk, format=None):
+        platform = self.get_object(pk)
+        platform.delete()
+        return Response(status=204)
+    
 
 
 
